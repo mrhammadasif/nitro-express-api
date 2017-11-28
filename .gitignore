@@ -1,0 +1,9 @@
+node_modules
+bower_components
+dist
+dbdata
+.idea
+public/uploads
+.env
+src/**/*.js
+src/**/*.js.map
