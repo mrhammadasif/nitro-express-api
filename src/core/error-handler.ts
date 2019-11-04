@@ -26,7 +26,7 @@ export default (err, req, res, next) => {
     err = err.replace(consecutiveSpaces, " ").trim()
     // return res.status(statusCode).send(err)
   }
-  console.trace(err)
+  console.error(err)
   return res.status(statusCode).send(err.message ? err.message : err)
 
 }

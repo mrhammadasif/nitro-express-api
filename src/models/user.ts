@@ -7,15 +7,13 @@ import mongooseSanitize from "../core/sanitize-schema"
 const Schema = mongoose.Schema
 
 export interface IUser extends mongoose.Document {
-  email: string
+  username: string
   name: string
-  fatherName: string
   password: string
   cnic: string
   profilePicture: string
   address: string
   department: string
-  profile: any
   mobile: string
   type: Roles
   // resetToken: string
@@ -33,16 +31,15 @@ export const RolesAll = [
 
 const mySchema = new Schema(
   {
-    email: {
-      required: "Email is required",
+    username: {
+      required: "Username is required",
       index: true,
-      unique: "User has already registered with the given email",
+      unique: "User has already registered with the given username",
       type: String,
       trim: true,
       lowercase: true
     },
     name: String,
-    fatherName: String,
     address: String,
     password: {
       required: "Password is required",
@@ -68,7 +65,7 @@ const mySchema = new Schema(
       default: ""
     },
     // use this for saving any additional information for the user
-    profile: mongoose.Schema.Types.Mixed,
+    // profile: mongoose.Schema.Types.Mixed,
     department: {
       type: String,
       default: ""

@@ -16,8 +16,6 @@ import "source-map-support/register"
 import ntxErrorHandler from "./core/error-handler"
 import BaseRouter from "./routes/base"
 
-const MongoDBStore = require("connect-mongodb-session")(expressSession)
-
 export class Server {
   public app: express.Application
 
@@ -39,7 +37,11 @@ export class Server {
     this.app.set("views", path.join(__dirname, "../views"))
 
     this.app.engine(
-      "hbs", exphbs() as any
+      "hbs", exphbs({
+        defaultLayout: "main",
+        layoutsDir: path.join(__dirname, "../views/layouts"),
+        extname: ".hbs"
+      }) as any
     )
     this.app.set("view engine", "hbs")
     this.app.set("json spaces", 2)
@@ -50,12 +52,6 @@ export class Server {
   load3rdPartyMiddlewares () {
     // allow for X-HTTP-METHOD-OVERRIDE header
     this.app.use(methodOverride())
-    // express flash setup
-    const store = new MongoDBStore({
-      uri: process.env.DB_CONNECTION_STRING,
-      databaseName: process.env.DB_NAME || "nitrodb",
-      collection: "ionSessions"
-    })
 
     // use body parser so we can get info from POST and/or URL parameters
     this.app.use(bodyParser.urlencoded({ extended: false }))

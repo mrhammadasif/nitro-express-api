@@ -1,10 +1,11 @@
 import { Request, Response, Router } from "express"
 import "express-async-errors"
 import { body } from "express-validator"
-import { authorizeByRole } from "../core/authorization"
-import { randPassword } from "../core/common"
+import { authorizeByRole, signJwt } from "../core/authorization"
+import { randPassword, hashPassword, encrypt } from "../core/common"
 import { validationErrorChecker } from "../core/error-handler"
 import UserModel, { Roles } from "../models/user"
+import myLanguage from "../language"
 
 require("dotenv").config()
 
@@ -13,16 +14,34 @@ export class Controller {
   getRouter (): Router {
     const router = Router()
     // all requests after this line will be authorized by default
-    router.get("/",  (req, res) => {res.send("Forbidden Area!") })
-    router.use(authorizeByRole(Roles.admin))
+    router.get("/",  (req: Request, res: Response) => {res.send("Forbidden Area!") })
 
-    router.get("/",  this.getUsers)
+    router.post("/login", async (req: Request, res: Response) => {
+      try {
+        const userObj = await UserModel.findOne({
+          username: req.body.username,
+          password: hashPassword(req.body.password)
+        }).select("-password")
+        if (!userObj) {throw false}
+        res.json({
+          token: signJwt({
+            _a: userObj._id,
+            _b: encrypt(hashPassword(req.body.password))
+          })
+        })
+      } catch (e) {
+        res.status(400).json(myLanguage.wrongUserCredentials)
+      }
+    })
+
+    router.get("/users",  async function (req: Request, res: Response) {
+      res.send(await UserModel.find({}).select("-password -username"))
+    })
+    router.get("/test", (req, res) => {
+      res.json("testing")
+    })
 
     return router
-  }
-
-  getUsers = async function (req: Request, res: Response) {
-    res.send(await UserModel.find({}))
   }
 
   addStudent = [

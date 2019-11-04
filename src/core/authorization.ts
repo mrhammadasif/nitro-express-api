@@ -1,7 +1,8 @@
 import * as express from "express"
 import * as jwt from "jsonwebtoken"
 import { each, hasIn, indexOf } from "lodash"
-import UserModel, { Roles } from "../models/user"
+import UserModel, { Roles, IUser } from "../models/user"
+import { decrypt } from "./common"
 
 require("dotenv").config()
 
@@ -12,15 +13,7 @@ const algo = "HS512"
 declare global {
   namespace Express {
     interface Request {
-      user: {
-        _id: string
-        name?: string
-        mobile?: string
-        email?: string
-        token?: string
-        type?: string
-        profile?: any
-      }
+      user: IUser
     }
   }
 }
@@ -57,9 +50,9 @@ export function authorizeByRole (...rolesEnum: Roles[]) {
         // log.info(roles)
         if (_doc) {
           UserModel.findOne({
-            _id: _doc._a
-            // password: decrypt(_doc._a)
-            // type: { $in: roles }
+            _id: _doc._a,
+            password: decrypt(_doc._b),
+            type: { $in: roles }
           })
             .then((userObj: any) => {
               if (userObj) {
@@ -70,12 +63,7 @@ export function authorizeByRole (...rolesEnum: Roles[]) {
                 } else {
                   return res.status(401).json("Invalid Auth Code found")
                 }
-
-                if (hasIn(userObj, "profile")) {
-                  req.user = userObj.profile || {}
-                  req.user._id = userObj._id
-                  req.user.type = userObj.type
-                }
+                req.user = userObj
                 next()
               } else {
                 return res.status(401).json("No User Found with the given detail")
