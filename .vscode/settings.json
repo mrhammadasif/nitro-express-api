@@ -1,13 +1,22 @@
-// Place your settings in this file to overwrite default and user settings.
 {
-    "files.exclude": {
-        "**/.git": true,
-        "**/.svn": true,
-        "**/.hg": true,
-        "**/CVS": true,
-        "**/.DS_Store": true,
-        "dbdata": true,
-        "public/uploads": true,
-        "dist": true
+  "files.exclude": {
+    "dist/": false,
+    "node_modules/": true
+  },
+  "eslint.autoFixOnSave": true,
+  "eslint.validate": [
+    "javascript",
+    {
+      "language": "typescript",
+      "autoFix": true
     }
+  ],
+  "editor.formatOnSave": false,
+  "[javascript]": {
+    "editor.formatOnSave": false
+  },
+  "[typescript]": {
+    "editor.formatOnSave": false
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
