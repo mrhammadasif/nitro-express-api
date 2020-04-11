@@ -1,42 +1,39 @@
 import * as crypto from "crypto"
-import * as _ from "lodash"
-import * as fs from "fs"
-import * as path from "path"
-import { fileURLToPath } from "url"
-require("dotenv").config()
+import { capitalize, parseInt, replace, startCase } from "lodash"
+const chance = require("chance")()
 
-const pathToLocalhostKey = path.join(__dirname, "../..", "/localhost.key")
-
-let privateFile = null
-if (fs.existsSync(pathToLocalhostKey)) {
-  privateFile = fs.readFileSync(pathToLocalhostKey, { encoding: "utf8" })
+const privateFile = () => {
+  const pv = process.env.SECRET
+  if (!pv) {
+    console.error("You need to Set SECRET variable in your .env file")
+  }
+  return pv
 }
 
 export function capitalizeWords (val): string {
-  return _.startCase(_.capitalize(val))
+  return startCase(capitalize(val))
 }
 
 export function convertEnumToStringArray (Enum: any): string[] {
-  return Object.keys(Enum).filter((elem) => !_.parseInt(elem) && elem !== "0")
+  return Object.keys(Enum).filter((elem) => !parseInt(elem) && elem !== "0")
 }
 
 export function removeSpace (value: string) {
-  return _.replace(value, /\W/gi, "")
+  return replace(value, /\W/gi, "")
 }
 
 export function encrypt (obj): string {
   const text = JSON.stringify(obj) || ""
-  const cipher = crypto.createCipher("aes-256-ctr", privateFile)
+  const cipher = crypto.createCipher("aes-256-ctr", privateFile())
   let crypted = cipher.update(text, "utf8", "hex")
   crypted += cipher.final("hex")
   return crypted
 }
 
-export function decrypt (text: string): string {
-  const decipher = crypto.createDecipher("aes-256-ctr", privateFile)
+export function decrypt (text: string = ""): string {
+  const decipher = crypto.createDecipher("aes-256-ctr", privateFile())
   let dec = decipher.update(text, "hex", "utf8")
   dec += decipher.final("utf8")
-  // let text = ''
   try {
     text = JSON.parse(dec)
   } catch (e) {
@@ -46,11 +43,20 @@ export function decrypt (text: string): string {
   return text
 }
 
+export function shortCode () {
+  const a = chance.string({
+    length: 8,
+    alpha: true,
+    numeric: true,
+    symbols: false
+  })
+  return `${a.substring(0, 2)}-${a.substring(2)}`
+}
 // return the hashed value of given value
 export function hashPassword (value: string): string {
   return !!value
     ? crypto
-      .createHmac("sha512", privateFile)
+      .createHmac("sha512", privateFile())
       .update(value, "utf8")
       .digest("hex")
     : void 0
@@ -65,14 +71,5 @@ export function generateToken (value: string = null): string {
 }
 
 export function randPassword (length: number = 10): string {
-  const uniqVal = new Date().getMilliseconds() + privateFile + new Date().getTime()
-  const generatedHash: string[] = crypto
-    .createHash("sha256")
-    .update(uniqVal.toString(), "utf8")
-    .digest("hex")
-    .split("")
-  const b = _.shuffle(generatedHash)
-    .splice(12)
-    .join("")
-  return b.substr(_.random(1, b.length - length), length)
+  return chance.string({ length })
 }

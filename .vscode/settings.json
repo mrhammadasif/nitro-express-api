@@ -1,6 +1,6 @@
 {
   "files.exclude": {
-    "dist/": false,
+    "dist/": true,
     "node_modules/": true
   },
   "eslint.autoFixOnSave": true,
@@ -18,5 +18,8 @@
   "[typescript]": {
     "editor.formatOnSave": false
   },
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
 }

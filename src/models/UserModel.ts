@@ -10,23 +10,23 @@ export interface IUser extends mongoose.Document {
   username: string
   name: string
   password: string
-  cnic: string
+  isActive: boolean
+  passwordSet: boolean
   profilePicture: string
-  address: string
-  department: string
-  mobile: string
   type: Roles
-  // resetToken: string
+  resetToken: string
 }
 
 export enum Roles {
   admin = "admin",
+  customer = "customer",
   manager = "manager"
 }
 
 export const RolesAll = [
   Roles.admin,
-  Roles.manager
+  Roles.manager,
+  Roles.customer
 ]
 
 const mySchema = new Schema(
@@ -46,19 +46,13 @@ const mySchema = new Schema(
       type: String,
       set: hashPassword
     },
-    mobile: {
-      trim: true,
-      type: String,
-      required: "Your mobile no is your unique identity, it is required",
-      unique: "User has already registered with the given mobile",
-      index: true
+    passwordSet: {
+      type: Boolean,
+      default: false
     },
-    cnic: {
-      type: String,
-      unique: "Student has already registered with the given CNIC",
-      dropDups: true,
-      sparse: true,
-      index: true
+    isActive: {
+      type: Boolean,
+      default: true
     },
     profilePicture: {
       type: String,
@@ -66,19 +60,15 @@ const mySchema = new Schema(
     },
     // use this for saving any additional information for the user
     // profile: mongoose.Schema.Types.Mixed,
-    department: {
-      type: String,
-      default: ""
-    },
     type: {
       type: String,
-      default: Roles.manager,
+      default: Roles.customer,
       enum: convertEnumToStringArray(Roles)
+    },
+    resetToken: {
+      select: false,
+      type: String
     }
-    // resetToken: {
-    //   select: false,
-    //   type: String
-    // }
 
   },
   {

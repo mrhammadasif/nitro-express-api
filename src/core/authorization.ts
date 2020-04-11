@@ -1,8 +1,9 @@
 import * as express from "express"
 import * as jwt from "jsonwebtoken"
 import { each, hasIn, indexOf } from "lodash"
-import UserModel, { Roles, IUser } from "../models/user"
+import UserModel, { Roles, IUser } from "../models/UserModel"
 import { decrypt } from "./common"
+import lang from "../lang"
 
 require("dotenv").config()
 
@@ -58,15 +59,15 @@ export function authorizeByRole (...rolesEnum: Roles[]) {
               if (userObj) {
                 if (hasIn(userObj, "type")) {
                   if (indexOf(roles, userObj.type) < 0) {
-                    return res.status(403).json("User not allowed to make this request")
+                    return res.status(403).json(lang.userForbidden)
                   }
                 } else {
-                  return res.status(401).json("Invalid Auth Code found")
+                  return res.status(401).json(lang.authInvalid)
                 }
                 req.user = userObj
                 next()
               } else {
-                return res.status(401).json("No User Found with the given detail")
+                return res.status(401).json(lang.noUserFound)
               }
             })
             .catch((err) => {
@@ -74,11 +75,11 @@ export function authorizeByRole (...rolesEnum: Roles[]) {
               return res.status(401).json(err || err.message)
             })
         } else {
-          return res.status(401).json("Invalid Authorization Code")
+          return res.status(401).json(lang.authInvalid)
         }
       })
     } else {
-      return res.status(400).json("Authorization Code is required for this request")
+      return res.status(400).json(lang.authRequired)
     }
   }
 }

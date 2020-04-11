@@ -2,11 +2,12 @@ import { validationResult } from "express-validator"
 import { parseInt, values } from "lodash"
 export const validationErrorChecker = (req, res, next) => {
   const errors = validationResult(req)
-  console.info(errors)
   if (!errors.isEmpty()) {
-    return res.status(400).send(values(errors.mapped()))
+    return res.status(400).send(errors.array().map((err) => err.msg))
   }
-  next()
+  else {
+    next()
+  }
 }
 export default (err, req, res, next) => {
   let statusCode = 400

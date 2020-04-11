@@ -1,10 +1,8 @@
 import * as bodyParser from "body-parser"
-import * as cookieParser from "cookie-parser"
 import * as cors from "cors"
 import * as express from "express"
 import "express-async-errors"
 import * as exphbs from "express-handlebars"
-import * as expressSession from "express-session"
 import { parseInt } from "lodash"
 import * as methodOverride from "method-override"
 import * as mime from "mime"
@@ -12,11 +10,14 @@ import * as mongoose from "mongoose"
 import * as uniqueValidator from "mongoose-unique-validator"
 import * as morgan from "morgan"
 import * as path from "path"
+const nocache = require("nocache")
 import "source-map-support/register"
 import ntxErrorHandler from "./core/error-handler"
-import BaseRouter from "./routes/base"
+import BaseRouter from "./router"
+require("dotenv").config()
 
 export class Server {
+
   public app: express.Application
 
   constructor () {
@@ -25,14 +26,17 @@ export class Server {
 
     this.load3rdPartyMiddlewares()
     this.loadDb()
+    this.app.use(morgan("combined"))
 
     this.loadRoutes(this.app)
+    this.initialPublicFolder(this.app)
+
+    // at the end set up ouwer error handler
     this.setUpErrorHandler(this.app)
   }
 
   loadConfig () {
     // support for .env files
-    require("dotenv").config()
     this.app.set("superSecret", process.env.SECRET)
     this.app.set("views", path.join(__dirname, "../views"))
 
@@ -47,6 +51,7 @@ export class Server {
     this.app.set("json spaces", 2)
     this.app.set("trust proxy", true)
     this.app.set("trust proxy", "loopback")
+    this.app.use(nocache())
   }
 
   load3rdPartyMiddlewares () {
@@ -65,19 +70,38 @@ export class Server {
         }
       })
     )
-    this.app.use(bodyParser.text())
 
     this.app.use(cors())
-    // requested by stripe
-    // this.app.use(bodyParser.raw({type: "*/*"}))
     this.app.use(this.setOwnHeader)
+
+    this.app.use((req, res, next) => {
+      res.setHeader("Content-type", "application/json")
+      next()
+    })
+  }
+
+  initialPublicFolder (app: express.Application) {
+    app.use(
+      "/",
+      express.static(__dirname + "/../public", {
+        setHeaders (res, path) {
+          console.info(path)
+          res.setHeader("content-type", mime.getType(path))
+        }
+      })
+    )
   }
 
   setUpErrorHandler (app: express.Application) {
-    if (process.env.NODE_ENV === "dev") {
-      // error Handler
-      app.use(morgan("dev"))
-    }
+    // in case nothing is resolved, we will show 404 page to the user
+    app.use("/", (req, res, next) => {
+      res.header("Content-type", "text/html")
+      res.status(404).render("404", {
+        reqUrl: req.originalUrl
+      })
+    })
+
+    // otherwise use logger with ourErrorHandler
     app.use(ntxErrorHandler)
   }
 
@@ -88,6 +112,8 @@ export class Server {
   ) {
     res.header("Server", "NitroNode")
     res.header("X-Powered-By", "NitroNode")
+    res.header("Access-Control-Expose-Headers", "count, page, pages")
+
     res.setTimeout(parseInt(process.env.TIMEOUT || "20000"), () => {
       res
         .status(504)
@@ -108,7 +134,6 @@ export class Server {
     mongoose.connect(
       process.env.DB_CONNECTION_STRING,
       {
-        // autoIndex: process.env.NODE_ENV === 'dev',
         dbName: process.env.DB_NAME,
         useNewUrlParser: true,
         autoIndex: true,
@@ -122,7 +147,7 @@ export class Server {
         }
         // here we're running loginScripts
         require("./core/bootstrap-db").default()
-        console.info("connected to the server")
+        console.info("Database Connected. API is LIVE now!")
       }
     )
     // If the Node process ends, close the Mongoose connection
@@ -139,31 +164,16 @@ export class Server {
   }
 
   loadRoutes (app: express.Application) {
-    const baseRouter = new BaseRouter(app)
-    app = baseRouter.initApp()
-
-    app.use(
-      "/public",
-      express.static(__dirname + "/../public", {
-        setHeaders (res, path) {
-          console.info(path)
-          res.setHeader("content-type", mime.getType(path))
-        }
-      })
-    )
-    app.use("/", (req, res, next) => {
-      res.header("Content-type", "text/html")
-      res.status(404).render("404", {
-        reqUrl: req.originalUrl
-      })
-    })
+    app.use(BaseRouter)
   }
 
   startServer () {
     // kicking off: Server
     const portNo = process.env.PORT || 8080
     this.app.listen(portNo, () => {
+      console.clear()
       console.info(`Server started at http://localhost:${portNo}`)
+      console.info("Connecting with Database...")
     })
   }
 }

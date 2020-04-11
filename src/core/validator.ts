@@ -7,21 +7,21 @@ export default {
   },
   imageFilter (req, file, cb) {
     // accept image only
-    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
       return cb(new Error("Only image files are allowed!"), false)
     }
     cb(null, true)
   },
   mediaFilter (req, file, cb) {
     // accept image only
-    if (!file.originalname.match(/\.(jpg|jpeg|png|gif|mp4|mov)$/)) {
-      return cb(new Error("Only image (jpg, png, gif) and movie files (mp4, mov) are allowed!"), false)
+    if (!file.originalname.match(/\.(jpg|jpeg|png|pdf|gif|mp4|mov)$/i)) {
+      return cb(new Error("Only image (jpg, png, gif), movie files (mp4, mov) and document (pdf) are allowed!"), false)
     }
     cb(null, true)
   },
   documentFilter (req, file, cb) {
     // accept all types of accepted documents
-    if (!file.originalname.match(/\.(jpg|jpeg|png|gif|doc|docx|pages|rtf|pdf|xls|xlsx)$/)) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif|doc|docx|pages|rtf|pdf|xls|xlsx)$/i)) {
       return cb(new Error("Only jpg, jpeg, png, gif, doc, docx, pages, rtf, pdf, xls or xlsx files are allowed!"), false)
     }
     cb(null, true)

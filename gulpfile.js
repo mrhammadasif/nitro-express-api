@@ -37,10 +37,10 @@ gulp.task("clean", function clean () {
 gulp.task("tsc", function (done) {
   tsProject
     .src()
-    // .pipe(sourcemaps.init())
+    .pipe(sourcemaps.init())
     .pipe(tsProject())
     .js
-    // .pipe(sourcemaps.write())
+    .pipe(sourcemaps.write())
     .pipe(gulp.dest("./dist"))
     .on("finish", () => {
       //   done()

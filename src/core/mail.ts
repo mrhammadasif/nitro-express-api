@@ -1,5 +1,4 @@
 import * as nodemailer from "nodemailer"
-const myApp = require("../../package.json")
 
 const smtpConfig = {
   host: "smtp.gmail.com",
@@ -11,23 +10,23 @@ const smtpConfig = {
   },
   secure: true, // use SSL
   auth: {
-    user: "",
-    pass: ""
+    user: process.env.GMAIL_USER || "",
+    pass: process.env.GMAIL_PASS || ""
   }
 }
 
-const transport = nodemailer.createTransport({
-  sendmail: true,
-  path: "/usr/sbin/sendmail"
-} as any)
+// uncomment this if you want to use sendmail instead of gmail
+// const transport = nodemailer.createTransport({
+//   sendmail: true,
+//   path: "/usr/sbin/sendmail"
+// } as any)
 
 const gmailTransport = nodemailer.createTransport(smtpConfig)
 
 export const sendMail = function (to: string, subject: string, html: string, attachments = []) {
   gmailTransport.sendMail(
     {
-      // replyTo: "info@isvmarket.com",
-      from: `noreply-${myApp.name}@nitroxis.com`,
+      from: process.env.ADMIN_EMAIL,
       to,
       subject: `${subject}`,
       html,

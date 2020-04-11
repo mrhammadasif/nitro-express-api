@@ -1,0 +1,34 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    // {
+    //   "type": "node",
+    //   "request": "launch",
+    //   "runtimeExecutable": "nodemon",
+    //   "args": ["--watch", "dist/scripts"],
+    //   "name": "Daily Script in Node.js",
+    //   "preLaunchTask": "tsc: watch - tsconfig.json",
+    //   "program": "${workspaceFolder}/src/scripts/daily.ts",
+    //   "cwd": "${workspaceFolder}",
+    //   "protocol": "inspector",
+    //   "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+    //   "restart": true
+    // },
+    {
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "nodemon",
+      "args": ["--watch", "dist"],
+      "name": "Start App and debug",
+      "preLaunchTask": "tsc: watch - tsconfig.json",
+      "program": "${workspaceFolder}/src/index.ts",
+      "cwd": "${workspaceFolder}",
+      "protocol": "inspector",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "restart": true
+    }
+  ]
+}

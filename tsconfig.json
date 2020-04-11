@@ -5,7 +5,7 @@
     "noEmitOnError": false,
     "resolveJsonModule": true,
     // "removeComments": true,
-    // "sourceMap": true,
+    "sourceMap": true,
     "rootDir": "./src",
     "rootDirs": ["./src", "."],
     "outDir": "dist",
