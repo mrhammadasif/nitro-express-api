@@ -114,7 +114,8 @@ export class Server {
     res.header("X-Powered-By", "NitroNode")
     res.header("Access-Control-Expose-Headers", "count, page, pages")
 
-    res.setTimeout(parseInt(process.env.TIMEOUT || "20000"), () => {
+    const timeOut = parseInt(process.env.TIMEOUT) || 30000 // 30 sec
+    res.setTimeout(timeOut, () => {
       res
         .status(504)
         .send("Timeout -> nothing to show")
