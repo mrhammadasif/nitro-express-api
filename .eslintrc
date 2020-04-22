@@ -16,7 +16,13 @@
     "@typescript-eslint/no-array-constructor": "error",
     "@typescript-eslint/indent": [
       "error",
-      2
+      2,
+      {
+        "MemberExpression": 0,
+        "FunctionDeclaration": {
+          "parameters": 0
+        }
+      }
     ],
     "comma-dangle": "error",
     "computed-property-spacing": "error",
@@ -39,16 +45,19 @@
     "array-bracket-newline": [
       "error",
       {
-        "minItems": 2
+        "multiline": true,
+        "minItems": 1
       }
     ],
     "camelcase": "error",
     "array-bracket-spacing": "error",
     "arrow-parens": "error",
+    "function-paren-newline": ["error", "multiline"],
     "array-element-newline": [
       "error",
       {
-        "minItems": 2
+        "minItems": 1,
+        "multiline": true
       }
     ],
     "vars-on-top": "error",
@@ -72,9 +81,12 @@
     "object-curly-spacing": ["error", "always"],
     "object-property-newline": [
       "error",
-      "always"
+      {"allowAllPropertiesOnSameLine": false}
     ],
-    "object-curly-newline": ["error", "always"],
+    "object-curly-newline": ["error", {
+      "ObjectExpression": "always",
+      "ImportDeclaration": "never"
+    }],
     "no-bitwise": "error",
     "require-await": "error",
     "quote-props": [
