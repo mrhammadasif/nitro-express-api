@@ -19,16 +19,20 @@ export const fileResizer =  (file) => {
     const thumbnail = path.join(__dirname, "/../../public/uploads/") + `/${isImageFile ? "images" : isVideoFile ? "videos" : "documents"}/t-${file.filename}`
     Promise.all([
       sharp(file.path)
-        .resize(1920, 1920, {
-          withoutEnlargement: true,
-          fit: "inside"
-        })
-        .jpeg({ quality: 50 })
-        .toFile(pathGenerated2),
+      .resize(1920, 1920, {
+        withoutEnlargement: true,
+        fit: "inside"
+      })
+      .jpeg({
+        quality: 50
+      })
+      .toFile(pathGenerated2),
       sharp(file.path)
-        .resize(150, 150)
-        .jpeg({ quality: 40 })
-        .toFile(thumbnail)
+      .resize(150, 150)
+      .jpeg({
+        quality: 40
+      })
+      .toFile(thumbnail)
     ]).then((e) => {
       unlinkSync(path.join(__dirname, "/../../public/", pathGenerated))
       pathGenerated = pathGenerated2
@@ -51,7 +55,9 @@ export const upload = (validatorFn = () => validator.imageFilter) => {
         const isVideoFile = path.extname(file.originalname).match(/\.(mp4|mov)$/i)
         const folderDestination = path.join(__dirname, `/../../public/uploads/${isImageFile ? "images" : isVideoFile ? "videos" : "documents"}`)
         if (!existsSync(folderDestination)) {
-          mkdirSync(folderDestination, { recursive: true })
+          mkdirSync(folderDestination, {
+            recursive: true
+          })
         }
         cb(null, folderDestination)
       },

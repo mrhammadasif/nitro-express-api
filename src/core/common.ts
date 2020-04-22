@@ -56,20 +56,22 @@ export function shortCode () {
 export function hashPassword (value: string): string {
   return !!value
     ? crypto
-      .createHmac("sha512", privateFile())
-      .update(value, "utf8")
-      .digest("hex")
+    .createHmac("sha512", privateFile())
+    .update(value, "utf8")
+    .digest("hex")
     : void 0
 }
 
 export function generateToken (value: string = null): string {
   const uniqVal = !value ? new Date().toString() : value
   return crypto
-    .createHash("sha256")
-    .update(uniqVal.toString(), "utf8")
-    .digest("hex")
+  .createHash("sha256")
+  .update(uniqVal.toString(), "utf8")
+  .digest("hex")
 }
 
 export function randPassword (length: number = 10): string {
-  return chance.string({ length })
+  return chance.string({
+    length
+  })
 }

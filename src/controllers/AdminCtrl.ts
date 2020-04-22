@@ -9,18 +9,31 @@ const controller = Router()
  * POST /admin/user/:UserID
  * enable or disable the user
  */
-controller.post("/user/:what",
+controller.post(
+  "/user/:what",
   authorizeByRole(Roles.admin),
-  [body("userId", "valid userId is required").exists().isMongoId()],
+  [
+    body("userId", "valid userId is required").exists().isMongoId()
+  ],
   validationErrorChecker,
   async (req, res) => {
-    const user = await UserModel.findOne({ _id: req.body.userId })
+    const user = await UserModel.findOne({
+      _id: req.body.userId
+    })
     if (!user) {
       return res.status(400).send("No user found with given credentials")
     }
     user.isActive = req.params.what === "enable" ? true : false
     await user.save()
     res.send("ok")
-  })
+  }
+)
+
+controller.get(
+  "/asdsad",
+  (req, res) => {
+    // do thing
+  }
+)
 
 export default controller

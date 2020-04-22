@@ -39,7 +39,11 @@ export function authorizeByRole (...rolesEnum: Roles[]) {
     const roles: string[] = []
     if (token) {
       // valid type of authorization is provided
-      jwt.verify(token, privateFile, { algorithms: [algo] }, (err, _doc: any) => {
+      jwt.verify(token, privateFile, {
+        algorithms: [
+          algo
+        ]
+      }, (err, _doc: any) => {
         if (err) {
           return res.status(401).json(err)
         }
@@ -53,27 +57,29 @@ export function authorizeByRole (...rolesEnum: Roles[]) {
           UserModel.findOne({
             _id: _doc._a,
             password: decrypt(_doc._b),
-            type: { $in: roles }
+            type: {
+              $in: roles
+            }
           })
-            .then((userObj: any) => {
-              if (userObj) {
-                if (hasIn(userObj, "type")) {
-                  if (indexOf(roles, userObj.type) < 0) {
-                    return res.status(403).json(lang.userForbidden)
-                  }
-                } else {
-                  return res.status(401).json(lang.authInvalid)
+          .then((userObj: any) => {
+            if (userObj) {
+              if (hasIn(userObj, "type")) {
+                if (indexOf(roles, userObj.type) < 0) {
+                  return res.status(403).json(lang.userForbidden)
                 }
-                req.user = userObj
-                next()
               } else {
-                return res.status(401).json(lang.noUserFound)
+                return res.status(401).json(lang.authInvalid)
               }
-            })
-            .catch((err) => {
-              console.error(err)
-              return res.status(401).json(err || err.message)
-            })
+              req.user = userObj
+              next()
+            } else {
+              return res.status(401).json(lang.noUserFound)
+            }
+          })
+          .catch((err) => {
+            console.error(err)
+            return res.status(401).json(err || err.message)
+          })
         } else {
           return res.status(401).json(lang.authInvalid)
         }

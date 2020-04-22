@@ -2,8 +2,10 @@ import * as traverse from "traverse"
 import * as sanitizer from "sanitizer"
 import { has, isArray } from "lodash"
 
-export default function mongooseSanitize (schema, options: any = {}) {
-  options = options || {}
+export default function mongooseSanitize (schema, options: any = {
+}) {
+  options = options || {
+  }
   options.include = has(options, "include") && isArray(options.include) ? options.include : []
   options.skip = has(options, "skip") && isArray(options.skip) ? options.skip : []
 

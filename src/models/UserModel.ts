@@ -80,7 +80,11 @@ mySchema.plugin(require("mongoose-unique-validator"))
 mySchema.plugin(mongooseSanitize)
 mySchema.plugin(idValidator)
 mySchema.plugin(autopopulate)
-mySchema.set("toObject", { getters: true })
-mySchema.set("toJSON", { getters: true })
+mySchema.set("toObject", {
+  getters: true
+})
+mySchema.set("toJSON", {
+  getters: true
+})
 
 export default mongoose.model<IUser>("User", mySchema)

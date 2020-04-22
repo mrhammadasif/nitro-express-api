@@ -40,13 +40,11 @@ export class Server {
     this.app.set("superSecret", process.env.SECRET)
     this.app.set("views", path.join(__dirname, "../views"))
 
-    this.app.engine(
-      "hbs", exphbs({
-        defaultLayout: "main",
-        layoutsDir: path.join(__dirname, "../views/layouts"),
-        extname: ".hbs"
-      }) as any
-    )
+    this.app.engine("hbs", exphbs({
+      defaultLayout: "main",
+      layoutsDir: path.join(__dirname, "../views/layouts"),
+      extname: ".hbs"
+    }) as any)
     this.app.set("view engine", "hbs")
     this.app.set("json spaces", 2)
     this.app.set("trust proxy", true)
@@ -59,17 +57,17 @@ export class Server {
     this.app.use(methodOverride())
 
     // use body parser so we can get info from POST and/or URL parameters
-    this.app.use(bodyParser.urlencoded({ extended: false }))
-    this.app.use(
-      bodyParser.json({
-        limit: "10MB",
-        verify (req, res, buf) {
-          if (req.url.toLowerCase().includes("webhook")) {
-            (req as any).rawBody = buf.toString()
-          }
+    this.app.use(bodyParser.urlencoded({
+      extended: false
+    }))
+    this.app.use(bodyParser.json({
+      limit: "10MB",
+      verify (req, res, buf) {
+        if (req.url.toLowerCase().includes("webhook")) {
+          (req as any).rawBody = buf.toString()
         }
-      })
-    )
+      }
+    }))
 
     this.app.use(cors())
     this.app.use(this.setOwnHeader)
@@ -117,8 +115,8 @@ export class Server {
     const timeOut = parseInt(process.env.TIMEOUT) || 30000 // 30 sec
     res.setTimeout(timeOut, () => {
       res
-        .status(504)
-        .send("Timeout -> nothing to show")
+      .status(504)
+      .send("Timeout -> nothing to show")
     })
     next()
   }
@@ -157,9 +155,7 @@ export class Server {
 
   gracefulExit () {
     mongoose.connection.close(function () {
-      console.info(
-        "Mongoose default connection is disconnected through app termination"
-      )
+      console.info("Mongoose default connection is disconnected through app termination")
       process.exit(0)
     })
   }
