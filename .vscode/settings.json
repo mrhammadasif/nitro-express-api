@@ -3,21 +3,12 @@
     "dist/": true,
     "node_modules/": true
   },
-  "eslint.autoFixOnSave": true,
   "eslint.validate": [
     "javascript",
-    {
-      "language": "typescript",
-      "autoFix": true
-    }
+    "typescript",
+    "json"
   ],
   "editor.formatOnSave": false,
-  "[javascript]": {
-    "editor.formatOnSave": false
-  },
-  "[typescript]": {
-    "editor.formatOnSave": false
-  },
   "typescript.tsdk": "node_modules/typescript/lib",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
